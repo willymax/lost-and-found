@@ -32,6 +32,7 @@ export default defineNuxtConfig({
 
   modules: [
     "@vite-pwa/nuxt",
+    "@pinia/nuxt",
     async (options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
         config.plugins ||= [];
