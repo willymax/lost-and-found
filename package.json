@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@vueuse/nuxt": "^11.0.0",
-    "nuxt-auth-utils": "^0.3.4",
+    "nuxt-auth-utils": "^0.3.5",
     "pinia": "^2.2.2"
   }
 }
