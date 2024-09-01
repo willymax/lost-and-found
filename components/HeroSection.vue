@@ -56,9 +56,9 @@
                       </v-btn>
                     </v-col>
                   </v-row>
-                  <v-row v-if="searchResults.length > 0" class="mt-4">
+                  <v-row class="mt-4">
                     <v-col cols="12">
-                      <v-list>
+                      <v-list v-if="searchResults.length > 0">
                         <v-list-item v-for="result in searchResults" :key="result.id">
                           <template v-slot:prepend>
                             <v-avatar color="blue">
@@ -72,7 +72,7 @@
                               variant="text"
                             ></v-btn>
                           </template>
-                          <v-list-item-content>
+                          <template>
                             <p><strong>Document Name:</strong> {{ result.name }}</p>
                             <p>
                               <strong>Found At:</strong>
@@ -88,9 +88,20 @@
                               label
                               >{{ keyword }}</v-chip
                             >
-                          </v-list-item-content>
+                          </template>
                         </v-list-item>
                       </v-list>
+                      <p v-else-if="noDocumentFound">No results found</p>
+                    </v-col>
+                  </v-row>
+                  <!-- document not found? allow the user to report the document -->
+                  <v-row v-if="showReportButton">
+                    <v-col cols="12">
+                      <p class="text-h6">Document not found?</p>
+                      <v-btn color="warning" block @click="tab = 'tab-2'">
+                        <v-icon left>mdi-file-alert</v-icon>
+                        Report Lost
+                      </v-btn>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -108,20 +119,44 @@
                       ></v-text-field>
                       <v-text-field
                         v-model="lastLocation"
-                        label="Location Lost/Found"
+                        label="Location Found"
                         outlined
                         dense
                         class="mb-4"
                       ></v-text-field>
-                      <!-- type of document -->
-                      <v-select
-                        v-model="documentType"
+                      <v-autocomplete
+                        v-model="selectedDocumentTypes"
+                        clearable
+                        multiple
                         :items="documentTypes"
-                        label="Document type"
+                        label="Select the document type"
+                        :search-input.sync="search"
+                        @change="search = ''"
+                      >
+                        <template #selection="{ item }">
+                          <v-chip
+                            closable
+                            color="primary"
+                            @click:close="deleteChip(item, selectedDocumentTypes)"
+                            >{{ item.value }}</v-chip
+                          >
+                        </template>
+                      </v-autocomplete>
+                      <!-- other types specify -->
+                      <v-text-field
+                        v-model="otherDocumentTypes"
+                        label="Other Document Types"
                         outlined
                         dense
                         class="mb-4"
-                      ></v-select>
+                      ></v-text-field>
+                      <v-textarea
+                        v-model="description"
+                        label="Description"
+                        outlined
+                        dense
+                        class="mb-4"
+                      ></v-textarea>
                     </v-col>
                   </v-row>
                   <v-row>
@@ -180,9 +215,18 @@ export default {
     return {
       tab: "search",
       searchQuery: "",
+      lastLocation: "",
+      description: "",
+      documentName: "",
+
       tab: "tab-1",
+      search: "",
       searching: false,
+      noDocumentFound: false,
+      showReportButton: false,
+      selectedDocumentTypes: [],
       searchResults: [],
+      documentTypes: ["National Id", "University Id", "Driving License"],
       tabs: [
         {
           icon: "mdi-magnify",
@@ -203,11 +247,16 @@ export default {
     };
   },
   methods: {
+    deleteChip(item, citySelection) {
+      this.selectedDocumentTypes = this.selectedDocumentTypes.filter((type) => type !== item.value);
+    },
     searchDocument() {
       this.searching = true;
+      this.noDocumentFound = false;
       console.log("Searching for document:", this.searchQuery);
       setTimeout(() => {
         this.searching = false;
+        this.showReportButton = true;
         this.searchResults = [
           {
             id: 1,
