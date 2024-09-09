@@ -22,7 +22,7 @@
     "@nuxtjs/google-fonts": "^3.2.0",
     "@pinia/nuxt": "^0.5.4",
     "@vite-pwa/nuxt": "^0.10.0",
-    "nuxt": "3.12.4",
+    "nuxt": "3.13.1",
     "sass": "^1.77.8",
     "vite-plugin-vuetify": "^2.0.4",
     "vuetify": "^3.7.0"
